@@ -59,13 +59,16 @@ La documentation complète se trouve dans **docs/ARCHITECTURE.md**
 ```
 
 ### ⚙️ Configuration
-*Modifier* **config/vehicle.conf** pour définir :
+>*Modifier* **config/vehicle.conf**
+   - pour définir :
+```markdown
 - type de véhicule  
 - marché  
 - motorisation  
 - modules actifs  
 - niveau de sécurité  
 - télémétrie  
+```
 
 ---
 
@@ -73,7 +76,7 @@ La documentation complète se trouve dans **docs/ARCHITECTURE.md**
 **Voir le dossier docs/**
 
 ### 📜 Licence
->Apache 2.0
->libre, ouvert, modifiable.
+- Apache 2.0
+   - libre, ouvert, modifiable.
 
 ---
