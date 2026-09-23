@@ -12,28 +12,16 @@ CarFactory/
 │
 ├── carfactory.sh          # Moteur principal
 │
-├── config/
-│   └── vehicle.conf       # Configuration véhicule
+├── config/                # Configuration véhicule
 │
 ├── modules/               # Modules dynamiques
-│   ├── diag_basic.sh
-│   ├── diag_engine.sh
-│   ├── diag_hybrid.sh
-│   ├── diag_ev.sh
-│   ├── obd_core.sh
-│   ├── obd_extended.sh
-│   ├── telemetry_local.sh
-│   └── report_advanced.sh
 │
 ├── plugins/               # Extensions personnalisées
 │   └── (modules tiers)
 │
 ├── logs/                  # Journaux cryptés
 │
-└── docs/
-    ├── README.md
-    ├── ARCHITECTURE.md
-    └── STRUCTURE.md
+└── docs/                  # Documentation du projet
 ```
 
 ---
