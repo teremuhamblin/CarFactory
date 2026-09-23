@@ -17,7 +17,6 @@ CarFactory/
 ├── modules/               # Modules dynamiques
 │
 ├── plugins/               # Extensions personnalisées
-│   └── (modules tiers)
 │
 ├── logs/                  # Journaux cryptés
 │
