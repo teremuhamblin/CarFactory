@@ -1,210 +1,161 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # ============================================================
-# CarFactory v2.0 — Tactical Engine (Fusion B+C)
-# Moteur principal militaire, modulaire, extensible.
-# ============================================================
-
-CF_VERSION="2.0"
-BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
-CONF_FILE="$BASE_DIR/config/vehicle.conf"
-MODULE_DIR="$BASE_DIR/modules"
-PLUGIN_DIR="$BASE_DIR/plugins"
-LOG_DIR="$BASE_DIR/logs"
-
-# ============================================================
-#  SECTION 1 — CHARGEMENT CONFIGURATION
+# CarFactory v2.1 — Military Engine Core
+# Division Cyber-Mécanique — Major Hamblin Edition
 # ============================================================
 
-load_config() {
-    if [[ ! -f "$CONF_FILE" ]]; then
-        echo "[ERROR] vehicle.conf introuvable."
-        exit 10
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+CONF="$ROOT_DIR/config/vehicle.conf"
+MODULES="$ROOT_DIR/modules"
+PLUGINS="$ROOT_DIR/plugins"
+LOGS="$ROOT_DIR/logs"
+
+# ============================================================
+# 1. SECUREOPS — Modes tactiques
+# ============================================================
+SECUREOPS_MODE="VERBOSE"
+
+secureops_init() {
+    if [[ ! -f "$CONF" ]]; then
+        echo "[CF-001] Configuration manquante."
+        exit 1
     fi
 
-    source "$CONF_FILE"
+    source "$CONF"
 
-    VEHICLE_TYPE="${VEHICLE_TYPE:-ICE}"
-    MARKET="${MARKET:-EU}"
-    DIAG_PROFILE="${DIAG_PROFILE:-basic}"
-    VERBOSE="${VERBOSE:-0}"
+    case "$SECUREOPS" in
+        "silent") SECUREOPS_MODE="SILENT" ;;
+        "verbose") SECUREOPS_MODE="VERBOSE" ;;
+        "redacted") SECUREOPS_MODE="REDACTED" ;;
+        *) SECUREOPS_MODE="VERBOSE" ;;
+    esac
 }
-
-# ============================================================
-#  SECTION 2 — LOGS CRYPTÉS (AES-256 SIMULÉ)
-# ============================================================
 
 log_event() {
-    mkdir -p "$LOG_DIR"
     local msg="$1"
-    local ts
-    ts="$(date '+%Y-%m-%d %H:%M:%S')"
+    local ts=$(date +"%Y-%m-%d %H:%M:%S")
 
-    # Simulation AES-256 (hash + XOR minimal)
-    local hash
-    hash="$(echo "$msg" | sha256sum | cut -d ' ' -f1)"
-    echo "$ts :: $hash :: $msg" >> "$LOG_DIR/carfactory.log"
+    echo "$ts | $msg" >> "$LOGS/events.log"
 }
 
-# ============================================================
-#  SECTION 3 — API INTERNE (BUS DE DISPATCH)
-# ============================================================
-
-dispatch() {
-    local action="$1"
-    shift
-
-    case "$action" in
-        diag)          run_diag "$@" ;;
-        obd)           run_obd "$@" ;;
-        telemetry)     run_telemetry ;;
-        report)        run_report ;;
-        plugin)        run_plugin "$@" ;;
-        *)
-            echo "[ERROR] Action inconnue: $action"
-            exit 20
-        ;;
+secure_echo() {
+    local msg="$1"
+    case "$SECUREOPS_MODE" in
+        "SILENT") return ;;
+        "REDACTED") echo "[REDACTED]" ;;
+        "VERBOSE") echo "$msg" ;;
     esac
 }
 
 # ============================================================
-#  SECTION 4 — CHARGEMENT MODULES
+# 2. INTEGRITY CORE — Vérification des modules
 # ============================================================
+integrity_check() {
+    secure_echo "[INT] Vérification d’intégrité des modules…"
 
-load_module() {
-    local module="$MODULE_DIR/$1.sh"
-    if [[ -f "$module" ]]; then
-        source "$module"
-    else
-        echo "[WARN] Module $1 manquant — fallback activé."
-        log_event "Module $1 manquant"
-    fi
-}
-
-load_all_modules() {
-    for m in "$MODULE_DIR"/*.sh; do
-        source "$m"
+    for mod in "$MODULES"/*.sh; do
+        if [[ ! -s "$mod" ]]; then
+            secure_echo "[CF-201] Module vide : $(basename "$mod")"
+            exit 1
+        fi
     done
+
+    secure_echo "[INT] Intégrité OK."
 }
 
 # ============================================================
-#  SECTION 5 — DIAGNOSTICS
+# 3. WATCHDOG CORE — Surveillance interne
 # ============================================================
+watchdog_core() {
+    secure_echo "[WD] Watchdog actif."
 
-run_diag() {
-    local mode="$1"
+    # Préparation pour plugin_watchdog.sh
+    if [[ -f "$PLUGINS/plugin_watchdog.sh" ]]; then
+        bash "$PLUGINS/plugin_watchdog.sh"
+    fi
+}
 
-    case "$VEHICLE_TYPE" in
-        ICE)
-            load_module "diag_engine"
-            diag_engine "$mode"
-        ;;
-        HYBRID)
-            load_module "diag_hybrid"
-            diag_hybrid "$mode"
-        ;;
-        EV)
-            load_module "diag_ev"
-            diag_ev "$mode"
-        ;;
+# ============================================================
+# 4. API interne — Exécution des modules
+# ============================================================
+run_module() {
+    local module="$1"
+    local file="$MODULES/$module.sh"
+
+    if [[ ! -f "$file" ]]; then
+        secure_echo "[CF-404] Module introuvable : $module"
+        exit 1
+    fi
+
+    secure_echo "[API] Exécution module : $module"
+    bash "$file"
+}
+
+# ============================================================
+# 5. Commandes tactiques
+# ============================================================
+cmd_diag() {
+    case "$1" in
+        "basic") run_module "diag_basic" ;;
+        "engine") run_module "diag_engine" ;;
+        "hybrid") run_module "diag_hybrid" ;;
+        "ev") run_module "diag_ev" ;;
+        "full")
+            run_module "diag_engine"
+            run_module "diag_hybrid"
+            run_module "diag_ev"
+            run_module "obd_core"
+            run_module "obd_extended"
+            ;;
         *)
-            echo "[ERROR] Type véhicule inconnu."
-            exit 30
-        ;;
+            secure_echo "[CF-300] Diagnostic inconnu."
+            ;;
     esac
+}
 
-    log_event "Diagnostic exécuté ($VEHICLE_TYPE / $mode)"
+cmd_sitrep() {
+    run_module "sitrep_extended"
+}
+
+cmd_report() {
+    run_module "report_advanced"
 }
 
 # ============================================================
-#  SECTION 6 — OBD-II
+# 6. Dispatcher — Cœur du moteur
 # ============================================================
-
-run_obd() {
-    local mode="$1"
-
-    if [[ "$mode" == "extended" ]]; then
-        load_module "obd_extended"
-        obd_extended
-    else
-        load_module "obd_core"
-        obd_core
-    fi
-
-    log_event "OBD exécuté ($mode)"
+dispatcher() {
+    case "$1" in
+        "init")
+            secure_echo "[INIT] Initialisation CarFactory…"
+            secureops_init
+            integrity_check
+            watchdog_core
+            ;;
+        "diag")
+            cmd_diag "$2"
+            ;;
+        "sitrep")
+            cmd_sitrep
+            ;;
+        "report")
+            cmd_report
+            ;;
+        "--silent")
+            SECUREOPS_MODE="SILENT"
+            dispatcher "$2" "$3"
+            ;;
+        "--redacted")
+            SECUREOPS_MODE="REDACTED"
+            dispatcher "$2" "$3"
+            ;;
+        *)
+            secure_echo "[CF-000] Commande inconnue."
+            ;;
+    esac
 }
 
 # ============================================================
-#  SECTION 7 — TÉLÉMÉTRIE
+# 7. Entrée principale
 # ============================================================
-
-run_telemetry() {
-    load_module "telemetry_local"
-    telemetry_local
-    log_event "Télémetrie locale exécutée"
-}
-
-# ============================================================
-#  SECTION 8 — RAPPORT AVANCÉ
-# ============================================================
-
-run_report() {
-    load_module "report_advanced"
-    report_advanced
-    log_event "Rapport avancé généré"
-}
-
-# ============================================================
-#  SECTION 9 — PLUGINS TIERS
-# ============================================================
-
-run_plugin() {
-    local plugin="$1"
-    local file="$PLUGIN_DIR/$plugin.sh"
-
-    if [[ -f "$file" ]]; then
-        source "$file"
-        plugin_main
-        log_event "Plugin exécuté: $plugin"
-    else
-        echo "[ERROR] Plugin introuvable: $plugin"
-        exit 40
-    fi
-}
-
-# ============================================================
-#  SECTION 10 — INTERFACE COMMANDES
-# ============================================================
-
-show_help() {
-    cat <<EOF
-CarFactory v$CF_VERSION — Moteur Tactique Ultra-Modulaire
-Usage:
-  carfactory.sh diag [basic|advanced|full]
-  carfactory.sh obd [core|extended]
-  carfactory.sh telemetry
-  carfactory.sh report
-  carfactory.sh plugin <nom>
-EOF
-}
-
-# ============================================================
-#  SECTION 11 — MAIN
-# ============================================================
-
-main() {
-    load_config
-
-    [[ "$VERBOSE" == "1" ]] && echo "[INFO] CarFactory v$CF_VERSION initialisé."
-
-    local cmd="$1"
-    shift
-
-    if [[ -z "$cmd" ]]; then
-        show_help
-        exit 0
-    fi
-
-    dispatch "$cmd" "$@"
-}
-
-main "$@"
+dispatcher "$1" "$2" "$3"
