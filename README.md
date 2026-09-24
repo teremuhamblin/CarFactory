@@ -66,7 +66,25 @@
 >Les plugins permettent d’intégrer des outils spécialisés (diagnostic, sécurité, surveillance) sans modifier le cœur du moteur.
 
 ### 🏗️ Architecture
-La documentation complète se trouve dans **docs/ARCHITECTURE.md**
+### Scripts automatiques
+```text
+- **create_module.sh** & **create_plugin.sh**
+```
+- CarFactory intègre deux scripts tactiques permettant de générer rapidement
+de nouveaux modules et plugins à partir des templates officiels :
+   - `create_module.sh` :
+```text
+crée automatiquement un module complet (structure, script, assets, tests).
+```
+   - `create_plugin.sh` :
+```text
+génère un plugin opérationnel avec configuration, assets et documentation.
+```
+
+>Ces outils assurent une standardisation militaire, accélèrent le développement
+et garantissent la compatibilité totale avec le moteur CarFactory.
+
+*La documentation complète se trouve dans* **docs/ARCHITECTURE.md**
 
 ### 🛠️ Utilisation
 ```bash
@@ -94,7 +112,6 @@ La documentation complète se trouve dans **docs/ARCHITECTURE.md**
 
 ### 📚 Documentation
 **Voir le dossier docs/**
-
 ### 📜 Licence
 - Apache 2.0
    - libre, ouvert, modifiable.
