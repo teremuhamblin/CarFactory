@@ -28,21 +28,21 @@
 ### 🧩 Modules intégrés
 ```markdown
 - diag_basic
-   - diagnostic rapide universel  
+   - >> diagnostic rapide universel  
 - diag_engine
-   - moteur thermique  
+   - >> moteur thermique  
 - diag_hybrid
-   - systèmes hybrides  
+   - >> systèmes hybrides  
 - diag_ev
-   - véhicules électriques  
+   - >> véhicules électriques  
 - obd_core
-   - OBD-II standard  
+   - >> OBD-II standard  
 - obd_extended
-   - OBD-II avancé  
+   - >> OBD-II avancé  
 - telemetry_local
-   - télémétrie locale  
+   - >> télémétrie locale  
 - report_advanced
-   - rapport technique enrichi
+   - >> rapport technique enrichi
 ```
 ###  🧩 Modules name
 - modules/module_name/
