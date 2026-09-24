@@ -43,19 +43,39 @@
    - télémétrie locale  
 - report_advanced
    - rapport technique enrichi
-``` 
+```
+###  🧩 Modules name
+- modules/module_name/
+   - Les modules CarFactory sont des unités tactiques autonomes chargées d’exécuter des fonctions internes du système.  
+- chaque module possède :
+   - son script principal (`module_name.sh`)
+   - sa documentation dédiée (`README.md`)
+   - ses ressources internes (`assets/`)
+   - ses tests tactiques (`tests/`)
+>Les modules étendent les capacités du moteur en ajoutant des opérations spécialisées, tout en respectant l’API interne.
+
+### 🧩 Plugins
+- plugins/plugin_name/
+   - Les plugins sont des extensions externes qui ajoutent des fonctionnalités avancées au moteur CarFactory.
+- chaque plugin inclut :
+   - un script d’exécution (`plugin_name.sh`)
+   - une configuration dédiée (`config/plugin.conf`)
+   - des ressources internes (`assets/`)
+   - une documentation courte (`README.md`)
+
+>Les plugins permettent d’intégrer des outils spécialisés (diagnostic, sécurité, surveillance) sans modifier le cœur du moteur.
 
 ### 🏗️ Architecture
 La documentation complète se trouve dans **docs/ARCHITECTURE.md**
 
 ### 🛠️ Utilisation
 ```bash
-./carfactory.sh diag
-./carfactory.sh diag engine
-./carfactory.sh diag ev
-./carfactory.sh obd basic
-./carfactory.sh obd extended
-./carfactory.sh report
+./carfactory.sh >> diag
+./carfactory.sh >> diag engine
+./carfactory.sh >> diag ev
+./carfactory.sh >> obd basic
+./carfactory.sh >> obd extended
+./carfactory.sh >> report
 ```
 
 ### ⚙️ Configuration
