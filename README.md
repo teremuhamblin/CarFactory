@@ -72,11 +72,11 @@
 ```
 - CarFactory intègre deux scripts tactiques permettant de générer rapidement
 de nouveaux modules et plugins à partir des templates officiels :
-   - `create_module.sh` :
+- `create_module.sh`
 ```text
 crée automatiquement un module complet (structure, script, assets, tests).
 ```
-   - `create_plugin.sh` :
+- `create_plugin.sh`
 ```text
 génère un plugin opérationnel avec configuration, assets et documentation.
 ```
